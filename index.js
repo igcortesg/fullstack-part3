@@ -33,6 +33,16 @@ app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
+// /info
+app.get('/info', (request, response) => {
+    const currentDate = new Date()
+    console.log(currentDate)
+    response.send(`
+        <p>Phonebook has info for ${persons.length} people<p>
+        <p>${currentDate}<p>
+    `)
+})
+
 // GET persons
 app.get('/api/persons', (request, response) => {
     response.json(persons)
