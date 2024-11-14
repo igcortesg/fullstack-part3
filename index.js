@@ -25,6 +25,11 @@ let persons = [
       id: 4,
       name: "Mary Poppendieck", 
       number: "39-23-6423122"
+    },
+    { 
+      id: 5,
+      name: "Delete Person", 
+      number: "1122334455"
     }
 ]
 
@@ -57,6 +62,13 @@ app.get('/api/persons/:id', (request, response) => {
     } else {
         response.status(404).end()
     }
+})
+
+// DELETE persons/?
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    persons = persons.filter(person => person.id !== id)
+    response.status(204).end()
 })
 
 
