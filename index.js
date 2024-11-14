@@ -31,7 +31,6 @@ app.use(morgan('tiny'))
 // JSON parser
 app.use(express.json())
 
-// NUEVOOOOOO!!
 const requestLogger = (request, response, next) => {
     console.log('Method:', request.method)
     console.log('Path:  ', request.path)
