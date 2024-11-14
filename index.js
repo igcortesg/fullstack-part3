@@ -25,11 +25,6 @@ let persons = [
       id: 4,
       name: "Mary Poppendieck", 
       number: "39-23-6423122"
-    },
-    { 
-      id: 5,
-      name: "Delete Person", 
-      number: "1122334455"
     }
 ]
 
@@ -38,7 +33,7 @@ app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
-// /info
+// info
 app.get('/info', (request, response) => {
     const currentDate = new Date()
     console.log(currentDate)
@@ -71,25 +66,32 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-// POST notes/?
-const generateId = () => {
-    const maxId = persons.length > 0
-      ? Math.max(...persons.map(p => p.id))
-      : 0
-    return maxId + 1
-  }
-  
+// POST persons/?  
 app.post('/api/persons', (request, response) => {
     const body = request.body
+    // Validation name
     if (!body.name) {
       return response.status(400).json({ 
-        error: 'content missing' 
+        error: 'name missing' 
       })
     }
+    // Validation number
+    if (!body.number) {
+      return response.status(400).json({ 
+          error: 'number missing' 
+      })
+    }
+    // Validation if name exists
+    if (persons.some(p => p.name === body.name)) {
+        return response.status(400).json({ 
+            error: 'name must be unique' 
+        })
+    }
+    
     const person = {
       name: body.name,
       number: body.number,
-      id: generateId(),
+      id: Math.floor(Math.random() * 100000),
     }
     persons = persons.concat(person)
   
