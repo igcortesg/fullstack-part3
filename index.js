@@ -1,9 +1,6 @@
 const express = require('express')
+const morgan = require('morgan');  // Import morgan
 const app = express()
-
-app.use(express.json())
-
-
 
 let persons = [
     { 
@@ -28,6 +25,27 @@ let persons = [
     }
 ]
 
+// Format 'tiny'
+app.use(morgan('tiny'))
+
+// JSON parser
+app.use(express.json())
+
+// NUEVOOOOOO!!
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next()
+}
+app.use(requestLogger)
+
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
 // Elemento H1
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -36,7 +54,6 @@ app.get('/', (request, response) => {
 // info
 app.get('/info', (request, response) => {
     const currentDate = new Date()
-    console.log(currentDate)
     response.send(`
         <p>Phonebook has info for ${persons.length} people<p>
         <p>${currentDate}<p>
@@ -97,6 +114,8 @@ app.post('/api/persons', (request, response) => {
   
     response.json(person)
 })
+
+app.use(unknownEndpoint)
 
 
 // Servidor
