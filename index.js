@@ -1,5 +1,6 @@
 const express = require('express')
-const morgan = require('morgan');  // Import morgan
+const morgan = require('morgan')  // Import morgan
+const cors = require('cors') // Import cors
 const app = express()
 
 let persons = [
@@ -25,20 +26,14 @@ let persons = [
     }
 ]
 
+// CORS
+app.use(cors())
+
 // Format 'tiny'
 app.use(morgan('tiny'))
 
 // JSON parser
 app.use(express.json())
-
-const requestLogger = (request, response, next) => {
-    console.log('Method:', request.method)
-    console.log('Path:  ', request.path)
-    console.log('Body:  ', request.body)
-    console.log('---')
-    next()
-}
-app.use(requestLogger)
 
 
 const unknownEndpoint = (request, response) => {
@@ -118,7 +113,7 @@ app.use(unknownEndpoint)
 
 
 // Servidor
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
