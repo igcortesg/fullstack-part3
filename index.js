@@ -32,6 +32,9 @@ app.use(cors())
 // Format 'tiny'
 app.use(morgan('tiny'))
 
+// Use dist
+app.use(express.static('dist'))
+
 // JSON parser
 app.use(express.json())
 
