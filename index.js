@@ -56,7 +56,7 @@ app.get('/info', (request, response) => {
         <p>${currentDate}<p>
     `)
 })
-
+ 
 // GET persons
 app.get('/api/persons', (request, response) => {
     response.json(persons)
