@@ -24,28 +24,6 @@ mongoose.connect(url)
 
 const Person = require('./models/person')
 
-let persons = [
-    { 
-      id: 1,
-      name: "Arto Hellas", 
-      number: "040-123456"
-    },
-    { 
-      id: 2,
-      name: "Ada Lovelace", 
-      number: "39-44-5323523"
-    },
-    { 
-      id: 3,
-      name: "Dan Abramov", 
-      number: "12-43-234345"
-    },
-    { 
-      id: 4,
-      name: "Mary Poppendieck", 
-      number: "39-23-6423122"
-    }
-]
 
 // CORS
 app.use(cors())
@@ -87,16 +65,28 @@ app.get('/api/persons', (request, response) => {
 
 // GET persons/?
 app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => {
-    response.json(person)
-  })
+  Person.findById(request.params.id)
+    .then(person => {
+      if(person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
+
 })
 
 // DELETE persons/?
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // POST persons/?  
