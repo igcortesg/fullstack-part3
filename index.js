@@ -1,7 +1,28 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')  // Import morgan
 const cors = require('cors') // Import cors
 const app = express()
+
+
+const mongoose = require('mongoose')
+// Consulta sobre password
+if (process.argv.length<3) {
+  console.log('give password as argument')
+  process.exit(1)
+}
+
+// Asigna password
+const password = process.argv[2]
+// URL de la BD
+const url =
+  `mongodb+srv://ignaciocortesg:${password}@clusterphonebook.th8ng.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=ClusterPhoneBook`
+
+mongoose.set('strictQuery',false)
+// Conexion a la BD
+mongoose.connect(url)
+
+const Person = require('./models/person')
 
 let persons = [
     { 
@@ -59,18 +80,16 @@ app.get('/info', (request, response) => {
  
 // GET persons
 app.get('/api/persons', (request, response) => {
+  Person.find({}).then(persons => {
     response.json(persons)
+  })
 })
 
 // GET persons/?
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
 })
 
 // DELETE persons/?
@@ -97,26 +116,27 @@ app.post('/api/persons', (request, response) => {
     }
     // Validation if name exists
     if (persons.some(p => p.name === body.name)) {
-        return response.status(400).json({ 
-            error: 'name must be unique' 
-        })
+      return response.status(400).json({ 
+          error: 'name must be unique' 
+      })
     }
     
-    const person = {
+    const person = new Person ({
       name: body.name,
       number: body.number,
       id: Math.floor(Math.random() * 100000),
-    }
-    persons = persons.concat(person)
-  
-    response.json(person)
+    })
+
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
 })
 
 app.use(unknownEndpoint)
 
 
 // Servidor
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
